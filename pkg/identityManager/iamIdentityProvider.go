@@ -127,6 +127,20 @@ func (identityProvider *iamIdentityProvider) ensureIamUser(iamSvc *iam.IAM, user
 		klog.Error(err)
 		return "", err
 	}
+	//Code Added to Tag IAM User Created by Liqo
+	TagUserRequest := &iam.TagUserInput{
+		Tags: []*iam.Tag{
+			{
+				Key: aws.String("Type"),
+				Value: aws.String("LiqoUser"),
+			},
+		},
+		UserName: aws.String(username),
+	}
+	_, err := iamSvc.TagUser(TagUserRequest)
+	if err != nil {
+		return err
+	}
 
 	return *createUserResult.User.Arn, nil
 }
